@@ -1,1 +1,1 @@
-from tester import *
+from dnstester_qboxxbyh.core import *
