@@ -18,7 +18,7 @@ This is a tester for a DNS proxy filter. It can be used locally or remotely to t
 
 # Installation
 
-This package is available on PyPI and can be installed with ```shell pip install dnstester-qboxxbyh ``` or updated with ```shell pip install --upgrade dnstester-qboxxbyh ```
+This package is available on PyPI and can be installed with ```pip install dnstester-qboxxbyh ``` or updated with ```pip install --upgrade dnstester-qboxxbyh ```
 
 # How to use
 
