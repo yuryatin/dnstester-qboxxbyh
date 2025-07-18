@@ -164,7 +164,7 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                     queries_refused[i] = (filtered_matrix == -1).sum()
                 
             if counter > 0:
-                print("\033[7A", end='')
+                print("\033[30A", end='')
             try:
                 clear_output(wait=True)
             except:
