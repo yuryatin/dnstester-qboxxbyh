@@ -27,3 +27,9 @@ from dnstester_qboxxbyh import dnsProxyTester
 tester = dnsProxyTester()
 tester.run()
 ```
+
+# The test results
+
+The results are displayed and are dynamically updated in the terminal:
+
+![Example screenshot](pics/updated_test_results.png)
