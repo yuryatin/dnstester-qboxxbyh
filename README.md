@@ -28,6 +28,10 @@ tester = dnsProxyTester()
 tester.run()
 ```
 
+# How it works
+
+The software downloads and uses a collection of 4,170,262 verified domains from https://tranco-list.eu/download/VQ92N/full. It makes a random sample without replacement from this pool of domains and randomly splits it into four subsamples. Using three of those subsamples (one for domains not to be found, one for domains to be refused service, and one for domains with randomly pre-specified IPv4 and IPv6 addresses), the software creates a test configuration file and locally launches the tested DNS proxy filter.
+
 # The test results
 
 The results are displayed and are dynamically updated in the terminal:
