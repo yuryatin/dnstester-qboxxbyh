@@ -33,3 +33,9 @@ tester.run()
 The results are displayed and are dynamically updated in the terminal:
 
 ![Example screenshot](pics/updated_test_results.png)
+
+# Constraints
+
+This version doesn't yet support:
+* Pre-specifying both IPv4 and IPv6 for the same domain in the configuration file
+* Testing the handling of non-standard multi-query DNS requests by a DNS proxy filter
