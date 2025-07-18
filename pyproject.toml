@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dnstester-qboxxbyh"
+version = "0.1.0"
+description = "This is a tester for a DNS proxy filter. Used to locally or remotely test DNS proxy filters that use a certain format of configuration file. See disciption at GitHub page."
+authors = [{name = "Alexander Yuryatin"}]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "requests",
+    "dnspython",
+    "pandas",
+    "IPython"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
