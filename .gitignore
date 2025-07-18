@@ -209,3 +209,6 @@ __marimo__/
 # MacOS and Linux system files
 .DS_Store
 *.swp
+
+# Jupyter Workbook
+workbook_dns.ipynb
