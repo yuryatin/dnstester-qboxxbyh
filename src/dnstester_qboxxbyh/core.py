@@ -15,6 +15,18 @@ import subprocess
 import atexit
 import platform
 import ipaddress
+logger = logging.getLogger("mylogger")
+logger.setLevel(logging.INFO)
+
+if logger.hasHandlers():
+    logger.handlers.clear()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler = logging.FileHandler("qboxxbyh.log", mode='w')
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 configFileExample = '''
                     [server]
@@ -211,7 +223,19 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                 with self.lock:
                     self.n_queries[n] += 1
                 q = dns.message.make_query(domain, getattr(dns.rdatatype, qtype))
-                response = dns.query.udp(q, self.listen_address, port=int(self.listen_port))
+                try:
+                    response = dns.query.udp(q, self.listen_address, port=int(self.listen_port), ignore_unexpected=self.ignoreUnexpected, ignore_trailing = self.ignoreTrailing, raise_on_truncation=self.raiseOnTruncation, ignore_errors=self.ignoreErrors, timeout=self.timeOut)
+                except dns.query.BadResponse as e:
+                    logger.error(f"{n} : {domain} : {qtype} : BadResponse error:")
+                    continue
+                except dns.query.UnexpectedSource as e:
+                    logger.error(f"{n} : {domain} : {qtype} : UnexpectedSource #error:")
+                except dns.query.Timeout as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Timeout error:")
+                    continue
+                except Exception as e:
+                    logger.error(f"{n} {domain} : {qtype} : Unexpected error:")
+                    continue
                 rcode = response.rcode()
                 if rcode == dns.rcode.NXDOMAIN:
                     with self.lock:
@@ -243,7 +267,8 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         else:
             return 'IPv6', ":".join(f"{random.randint(0, 0xFFFF):x}" for _ in range(8))
 
-    def run(self, ip_input = None, port_input = None, app_folder = None, sample_size_input = None):
+    def run(self, ip_input = None, port_input = None, app_binary = None, sample_size_input = None, ignoreUnexpected = False, ignoreTrailing = False, raiseOnTruncation = False, ignoreErrors = False, timeOut = None):
+        # timeOut = None (in seconds) | waiting forever
         if isinstance(ip_input, str) and (self._is_valid_ipv4(ip_input) or self._is_valid_ipv6(ip_input)):
             self.listen_address = ip_input
         if isinstance(port_input, str):
@@ -256,6 +281,21 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         if isinstance(sample_size_input, int):
             if sample_size_input > 4:
                 self.sample_size = sample_size_input
+        if isinstance(app_binary, str):
+            self.app_binary = app_binary
+        else:
+            print("Error: you haven't provided as a parameter 'app_binary' for the run() method the binary file path for the DNS proxy filter you want to test. For instance, it can be app_binary='~/p2B9agE1/test_dns' or if your DNS proxy filter is a Python script named test_dns.py, then it can be app_binary='python3 ~/p2B9agE1/test_dns.py'")
+            return
+        if isinstance(ignoreUnexpected, bool):
+            self.ignoreUnexpected = ignoreUnexpected
+        if isinstance(ignoreTrailing, bool):
+            self.ignoreTrailing = ignoreTrailing
+        if isinstance(raiseOnTruncation, bool):
+            self.raiseOnTruncation = raiseOnTruncation
+        if isinstance(ignoreErrors, bool):
+            self.ignoreErrors = ignoreErrors
+        if isinstance(timeOut, int) and timeOut > 0:
+            self.timeOut = timeOut
 
         self.df = pd.DataFrame(columns=[*self.all_types, 'ipA', 'ipAAAA'])
         self.queried_domains = [0, 0, 0, 0]
@@ -298,12 +338,18 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         
         time.sleep(1)
         
-        proc = subprocess.Popen(
-            ['python3', os.path.expanduser('~/p2B9agE1/test_dns.py')],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            stdin=subprocess.DEVNULL,
-        )
+        try:
+            proc = subprocess.Popen(
+                [*[os.path.expanduser(part) for part in self.app_binary.split()]], #, config_path + self.config_file_name],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                stdin=subprocess.DEVNULL,
+            )
+        except FileNotFoundError as e:
+            print(f"Error: the specified binary file '{self.app_binary}' does not seem to exist or there is another error {e}. Please check the path and try again.")
+            return
+        except Exception as e:
+            print(f"An unexpected error occurred while starting the DNS proxy filter for testing: {e}")
 
         time.sleep(2)
         
