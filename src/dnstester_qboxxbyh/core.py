@@ -270,6 +270,9 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                     continue
                 except dns.query.UnexpectedSource as e:
                     logger.error(f"{n} : {domain} : {qtype} : UnexpectedSource #error:")
+                except dns.exception.FormError as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Form Error error:")
+                    continue
                 except dns.query.BadResponse as e:
                     logger.error(f"{n} : {domain} : {qtype} : Bad Response error:")
                     continue
