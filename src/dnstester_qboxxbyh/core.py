@@ -15,6 +15,8 @@ import subprocess
 import atexit
 import platform
 import ipaddress
+import logging
+
 logger = logging.getLogger("mylogger")
 logger.setLevel(logging.INFO)
 
