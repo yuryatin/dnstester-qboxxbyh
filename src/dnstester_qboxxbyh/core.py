@@ -391,7 +391,7 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
 
         time.sleep(2)
         
-        print_update = threading.Thread(target=self.update, args=((sampled_domain, not_to_be_found, to_be_refused, ips_to_be_substituted)))
+        print_update = threading.Thread(target=self.update, args=((sampled_domain, not_to_be_found, to_be_refused, ips_to_be_substituted),))
         print_update.setDaemon(False)
         print_update.start()
         
