@@ -185,7 +185,7 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                     queries_w_responses[i] = (filtered_matrix >= 0).sum()
                     queries_not_found[i] = (filtered_matrix == -2).sum()
                     queries_refused[i] = (filtered_matrix == -1).sum()
-                    
+
             if self.updateResults:
                 if counter > 0:
                     print("\033[30A", end='')
@@ -238,13 +238,35 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                 try:
                     response = dns.query.udp(q, self.listen_address, port=int(self.listen_port), ignore_unexpected=self.ignoreUnexpected, ignore_trailing = self.ignoreTrailing, raise_on_truncation=self.raiseOnTruncation, ignore_errors=self.ignoreErrors, timeout=self.timeOut)
                 except dns.query.BadResponse as e:
-                    logger.error(f"{n} : {domain} : {qtype} : BadResponse error:")
+                    logger.error(f"{n} : {domain} : {qtype} : Bad Response error:")
                     continue
+                except dns.message.BadEDNS as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Bad EDNS message error:")
+                    continue
+                except dns.message.BadTSIG as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Bad TSIG message error:")
+                    continue
+                except dns.message.ShortHeader as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Short Header message error:")
+                    continue
+                except dns.message.TrailingJunk as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Trailing Junk message error:")
+                    continue
+                except dns.name.BadLabelType as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Bad Label type name error:")
+                    continue
+                except dns.name.BadPointer as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Bad Pointer name error:")
+                    continue
+                except dns.name.NameTooLong as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Name Too Long   error:")
+                    continue
+                except dns.query.TransferError as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Transfer Error query error:")
+                    continue
+
                 except dns.query.UnexpectedSource as e:
                     logger.error(f"{n} : {domain} : {qtype} : UnexpectedSource #error:")
-                except dns.query.Timeout as e:
-                    logger.error(f"{n} : {domain} : {qtype} : Timeout error:")
-                    continue
                 except Exception as e:
                     logger.error(f"{n} {domain} : {qtype} : Unexpected error:")
                     continue
