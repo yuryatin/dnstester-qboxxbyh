@@ -149,6 +149,7 @@ dns3 = 8.8.4.4
         return app_data_dir
 
     def update(self, samples):
+        logger.info(f"Tester works with port {self.listen_port} and address {self.listen_address}")
         counter = 0
         queried_domains_local = [None, None, None, None]
         n_queries_local = [None, None, None, None]
