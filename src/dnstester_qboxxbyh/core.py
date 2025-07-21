@@ -241,8 +241,8 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                 except dns.exception.Timeout as e:
                     logger.error(f"{n} : {domain} : {qtype} : DNS Timeout error:")
                     continue
-                except dns.query.BadResponse as e:
-                    logger.error(f"{n} : {domain} : {qtype} : Bad Response error:")
+                except dns.exception.UnexpectedEnd as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Text input ended unexpectedly:")
                     continue
                 except dns.message.BadEDNS as e:
                     logger.error(f"{n} : {domain} : {qtype} : Bad EDNS message error:")
@@ -270,6 +270,9 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                     continue
                 except dns.query.UnexpectedSource as e:
                     logger.error(f"{n} : {domain} : {qtype} : UnexpectedSource #error:")
+                except dns.query.BadResponse as e:
+                    logger.error(f"{n} : {domain} : {qtype} : Bad Response error:")
+                    continue
                 except Exception as e:
                     logger.error(f"{n} {domain} : {qtype} : Unexpected error: {type(e).__module__}.{type(e).__name__}")
                     continue
