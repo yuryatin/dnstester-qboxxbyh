@@ -237,6 +237,9 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                 q = dns.message.make_query(domain, getattr(dns.rdatatype, qtype))
                 try:
                     response = dns.query.udp(q, self.listen_address, port=int(self.listen_port), ignore_unexpected=self.ignoreUnexpected, ignore_trailing = self.ignoreTrailing, raise_on_truncation=self.raiseOnTruncation, ignore_errors=self.ignoreErrors, timeout=self.timeOut)
+                except dns.exception.Timeout as e:
+                    logger.error(f"{n} : {domain} : {qtype} : DNS Timeout error:")
+                    continue
                 except dns.query.BadResponse as e:
                     logger.error(f"{n} : {domain} : {qtype} : Bad Response error:")
                     continue
