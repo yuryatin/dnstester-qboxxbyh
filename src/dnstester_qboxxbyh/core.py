@@ -264,11 +264,10 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                 except dns.query.TransferError as e:
                     logger.error(f"{n} : {domain} : {qtype} : Transfer Error query error:")
                     continue
-
                 except dns.query.UnexpectedSource as e:
                     logger.error(f"{n} : {domain} : {qtype} : UnexpectedSource #error:")
                 except Exception as e:
-                    logger.error(f"{n} {domain} : {qtype} : Unexpected error:")
+                    logger.error(f"{n} {domain} : {qtype} : Unexpected error: {type(e).__name__}")
                     continue
                 rcode = response.rcode()
                 if rcode == dns.rcode.NXDOMAIN:
