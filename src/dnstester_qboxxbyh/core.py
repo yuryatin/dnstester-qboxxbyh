@@ -345,19 +345,20 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         
         time.sleep(1)
         
-        try:
-            proc = subprocess.Popen(
-                [*[os.path.expanduser(part) for part in self.app_binary.split()]], #, config_path + self.config_file_name],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                stdin=subprocess.DEVNULL,
-            )
-        except FileNotFoundError as e:
-            print(f"Error: the specified binary file '{self.app_binary}' does not seem to exist or there is another error {e}. Please check the path and try again.")
-            return
-        except Exception as e:
-            print(f"An unexpected error occurred while starting the DNS proxy filter for testing: {e}")
-            return
+        if self.listen_address == '127.0.0.1' or self.listen_address == '::1':
+            try:
+                proc = subprocess.Popen(
+                    [*[os.path.expanduser(part) for part in self.app_binary.split()]], #, config_path + self.config_file_name],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    stdin=subprocess.DEVNULL,
+                )
+            except FileNotFoundError as e:
+                print(f"Error: the specified binary file '{self.app_binary}' does not seem to exist or there is another error {e}. Please check the path and try again.")
+                return
+            except Exception as e:
+                print(f"An unexpected error occurred while starting the DNS proxy filter for testing: {e}")
+                return
 
         time.sleep(2)
         
@@ -393,7 +394,8 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         
         print('\nTEST FINISHED')
         
-        atexit.register(proc.terminate)
+        if proc.poll() is None:
+            atexit.register(proc.terminate)
 
         time.sleep(3)
 
