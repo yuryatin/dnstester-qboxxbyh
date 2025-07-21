@@ -357,6 +357,7 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
             return
         except Exception as e:
             print(f"An unexpected error occurred while starting the DNS proxy filter for testing: {e}")
+            return
 
         time.sleep(2)
         
@@ -393,3 +394,8 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         print('\nTEST FINISHED')
         
         atexit.register(proc.terminate)
+
+        time.sleep(3)
+
+        if proc.poll() is None:
+            proc.kill()
