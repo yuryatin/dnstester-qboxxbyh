@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dnstester-qboxxbyh"
-version = "0.1.9"
+version = "0.1.10"
 description = "This is a tester for a DNS proxy filter. Used to locally or remotely test DNS proxy filters that use a certain format of configuration file. See disciption at GitHub page."
 authors = [{name = "Alexander Yuryatin"}]
 readme = "README.md"

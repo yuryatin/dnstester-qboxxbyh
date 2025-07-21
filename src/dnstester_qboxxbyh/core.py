@@ -59,7 +59,7 @@ class dnsProxyTester():
         except ValueError:
             return False
     
-    def __init__(self, ip_input='127.0.0.1', port_input='1053', app_folder='~/.config/p2B9agE1/', sample_size_input = 50):
+    def __init__(self, ip_input='127.0.0.1', port_input='1053', app_folder='~/.config/p2B9agE1/', sample_size_input = 50, updateResults = True):
         if isinstance(ip_input, str) and (self._is_valid_ipv4(ip_input) or self._is_valid_ipv6(ip_input)):
             self.listen_address = ip_input
         else:
@@ -80,6 +80,10 @@ class dnsProxyTester():
                 self.sample_size = 5
         else:
             self.sample_size = 50
+        if isinstance(updateResults, bool):
+            self.updateResults = updateResults
+        else:
+            self.updateResults = True
         self.ignoreUnexpected = False
         self.ignoreTrailing = False
         self.raiseOnTruncation = False
@@ -181,13 +185,14 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                     queries_w_responses[i] = (filtered_matrix >= 0).sum()
                     queries_not_found[i] = (filtered_matrix == -2).sum()
                     queries_refused[i] = (filtered_matrix == -1).sum()
-                
-            if counter > 0:
-                print("\033[30A", end='')
-            try:
-                clear_output(wait=True)
-            except:
-                pass
+                    
+            if self.updateResults:
+                if counter > 0:
+                    print("\033[30A", end='')
+                try:
+                    clear_output(wait=True)
+                except:
+                    pass
     
             for i in range(4):
                 if queried_domains_local[i]:
