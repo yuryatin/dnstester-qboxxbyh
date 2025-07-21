@@ -423,10 +423,11 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         
         print('\nTEST FINISHED')
         
-        if proc.poll() is None:
-            atexit.register(proc.terminate)
+        if self.listen_address == '127.0.0.1' or self.listen_address == '::1':
+            if proc.poll() is None:
+                atexit.register(proc.terminate)
 
-        time.sleep(3)
+            time.sleep(3)
 
-        if proc.poll() is None:
-            proc.kill()
+            if proc.poll() is None:
+                proc.kill()
