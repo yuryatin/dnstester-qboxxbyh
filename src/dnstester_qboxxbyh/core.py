@@ -80,6 +80,11 @@ class dnsProxyTester():
                 self.sample_size = 5
         else:
             self.sample_size = 50
+        self.ignoreUnexpected = False
+        self.ignoreTrailing = False
+        self.raiseOnTruncation = False
+        self.ignoreErrors = False
+        self.timeOut = None
         self.lock = threading.Lock()
         self.tranco_list = 'https://tranco-list.eu/download/VQ92N/full'
         self.titles = ('of pass-through sample', 'not to be found', 'to be refused', 'with pre-specified IPs')
