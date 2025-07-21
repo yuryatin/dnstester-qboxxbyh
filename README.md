@@ -22,10 +22,26 @@ This package is available on PyPI and can be installed with ```pip install dnste
 
 # How to use
 
+If the DNS proxy filter being tested is a Python script (e.g., mydnsfilter.py): 
 ```python
 from dnstester_qboxxbyh import dnsProxyTester
-tester = dnsProxyTester()
-tester.run()
+tester = dnsProxyTester(sample_size_input = 200)
+tester.run(app_binary = "python3 mydnsfilter.py", sample_size_input = 200,
+                        ignoreUnexpected = False, ignoreTrailing = False,
+                        raiseOnTruncation = False, ignoreErrors = False,
+                        timeOut = None) # None for timeOut means for ever
+```
+
+Or, if the DNS proxy filter being tested is a binary (which may also require its own parameters, such as a configuration file):
+
+```python
+from dnstester_qboxxbyh import dnsProxyTester
+tester = dnsProxyTester(sample_size_input = 200)
+tester.run(app_binary =
+  "~/dns-proxy-filter-p2B9agE1/dns_proxy_filter_p2B9agE1 ~/.config/p2B9agE1/dns-proxy-p2B9agE1.conf",
+                        sample_size_input = 200, ignoreUnexpected = False, ignoreTrailing = False,
+                        raiseOnTruncation = False, ignoreErrors = False,
+                        timeOut = None) # None for timeOut means for ever
 ```
 
 # How it works
