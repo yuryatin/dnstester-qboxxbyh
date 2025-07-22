@@ -52,7 +52,8 @@ The software downloads and uses a collection of 4,170,262 verified domains from 
 
 The results are displayed and are dynamically updated in the terminal:
 
-![Example screenshot](pics/updated_test_results.png)
+<img width="579" height="776" alt="updated_test_results" src="https://github.com/user-attachments/assets/99646274-c56a-433d-abdb-cf13241a3aa3" />
+
 
 # Constraints
 
