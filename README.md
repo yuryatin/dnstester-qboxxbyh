@@ -39,7 +39,7 @@ from dnstester_qboxxbyh import dnsProxyTester
 tester = dnsProxyTester(sample_size_input = 200)
 tester.run(app_binary =
   "~/dns-proxy-filter-p2B9agE1/dns_proxy_filter_p2B9agE1 ~/.config/p2B9agE1/dns-proxy-p2B9agE1.conf",
-                        sample_size_input = 200, ignoreUnexpected = False, ignoreTrailing = False,
+                        sample_size_input = 200, ignoreUnexpected = False, ignoreTrailing = False, cores = 16,
                         raiseOnTruncation = False, ignoreErrors = False,
                         timeOut = None) # None for timeOut means for ever
 ```
