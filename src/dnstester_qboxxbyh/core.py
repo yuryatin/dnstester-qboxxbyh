@@ -92,6 +92,7 @@ class dnsProxyTester():
         self.lock = threading.Lock()
         self.tranco_list = 'https://tranco-list.eu/download/VQ92N/full'
         self.titles = ('of pass-through sample', 'not to be found', 'to be refused', 'with pre-specified IPs')
+        self.cores = None
 
         # https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.2
         RFC_1035_chapter_3_2_2_types = ['A', 'NS', 'MD', 'MF', 'CNAME', 'SOA', 'MB', 'MG', 'MR', 'NULL', 'WKS', 'PTR', 'HINFO', 'MINFO', 'MX', 'TXT']
@@ -204,7 +205,7 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
                     proportion_refused[i] = 100.0 * queries_refused[i] / n_queries_local[i]
     
             ip_matched_counter = 0
-            ip_queries = (ips_prespecified[['A', 'AAAA']].values > 0).sum()
+            #ip_queries = (ips_prespecified[['A', 'AAAA']].values > 0).sum()
             
             for i, row in ips_prespecified.iterrows():
                 if pd.notna(row['ipA']) and len(row['ipA']) and self.predefinedIP[i][0] == 'IPv4':
@@ -218,13 +219,13 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
             for i in range(4):
                 print(f"\n\t\tDomains {self.titles[i]}" + table_template(i))
                 if i == 3:
-                    print(f'IPs matched\t{ip_queries}\t{ip_predefined_color[i]}{ip_matched_counter}\033[0m')
+                    print(f'IPs matched\t{ip_predefined_color[i]}{ip_matched_counter:9d}\033[0m')
             
             sys.stdout.flush()
             counter += 1
             if self.stop_event.is_set():
                 break
-            time.sleep(0.3)
+            time.sleep(0.5)
 
     def dns_collection(self, domains_list, n):
         domains_queries = set()
@@ -310,7 +311,7 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         else:
             return 'IPv6', ":".join(f"{random.randint(0, 0xFFFF):x}" for _ in range(8))
 
-    def run(self, ip_input = None, port_input = None, app_binary = None, sample_size_input = None, ignoreUnexpected = False, ignoreTrailing = False, raiseOnTruncation = False, ignoreErrors = False, timeOut = None):
+    def run(self, ip_input = None, port_input = None, app_binary = None, sample_size_input = None, ignoreUnexpected = False, ignoreTrailing = False, raiseOnTruncation = False, ignoreErrors = False, timeOut = None, cores = None):
         # timeOut = None (in seconds) | waiting forever
         if isinstance(ip_input, str) and (self._is_valid_ipv4(ip_input) or self._is_valid_ipv6(ip_input)):
             self.listen_address = ip_input
@@ -339,10 +340,16 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
             self.ignoreErrors = ignoreErrors
         if isinstance(timeOut, int) and timeOut > 0:
             self.timeOut = timeOut
+        if isinstance(cores, int) and cores > 0:
+            if cores <= os.cpu_count() * 4:
+                self.cores = cores
+            else:
+                self.cores = os.cpu_count() * 4
 
         self.df = pd.DataFrame(columns=[*self.all_types, 'ipA', 'ipAAAA'])
         self.queried_domains = [0, 0, 0, 0]
         self.n_queries = [0, 0, 0, 0]
+        self.sent_prespecified_ips = 0
 
         sampled_domain = random.sample(self.content, min(self.sample_size, len(self.content)))
 
@@ -384,7 +391,7 @@ Refused\t\t{refused_color[i]}{queries_refused[i]:9d}\033[0m\t{proportion_refused
         if self.listen_address == '127.0.0.1' or self.listen_address == '::1':
             try:
                 proc = subprocess.Popen(
-                    [*[os.path.expanduser(part) for part in self.app_binary.split()]], #, config_path + self.config_file_name],
+                    [*[os.path.expanduser(part) for part in self.app_binary.split()], str(self.cores) if self.cores else ''], #, config_path + self.config_file_name],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     stdin=subprocess.DEVNULL,
